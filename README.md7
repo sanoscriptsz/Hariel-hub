@@ -1,0 +1,117 @@
+-- Carregando a biblioteca principal e os gerenciadores
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/main/addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/main/addons/InterfaceManager.lua"))()
+
+-- Criando a janela principal
+local Window = Fluent:CreateWindow({
+    Title = "Fluent " .. Fluent.Version,
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Theme = "Dark"
+})
+
+-- Criando as abas
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main" }),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+}
+
+-- Notificação simples
+Fluent:Notify({
+    Title = "Fluent UI",
+    Content = "Interface carregada com sucesso!"
+})
+
+-- Parágrafo na aba Main
+Tabs.Main:AddParagraph({
+    Title = "Informações",
+    Content = "Esta é uma interface de exemplo.\nSinta-se à vontade para customizar."
+})
+
+-- Botão com callback
+Tabs.Main:AddButton({
+    Title = "Clique Aqui",
+    Callback = function()
+        Fluent:Notify({
+            Title = "Botão Pressionado",
+            Content = "Você clicou no botão!"
+        })
+    end
+})
+
+-- Toggle (on/off)
+local Toggle = Tabs.Main:AddToggle("MyToggle", { Title = "Ativar Função" })
+Toggle:OnChanged(function(value)
+    print("Toggle ativado:", value)
+end)
+
+-- Slider (controle de valor)
+Tabs.Main:AddSlider("VolumeSlider", {
+    Title = "Volume",
+    Description = "Controle de volume",
+    Default = 50,
+    Min = 0,
+    Max = 100,
+    Rounding = 0,
+    Callback = function(value)
+        print("Volume definido para:", value)
+    end
+})
+
+-- Dropdown (menu de opções)
+Tabs.Main:AddDropdown("Escolha", {
+    Title = "Escolha uma opção",
+    Values = { "Opção 1", "Opção 2", "Opção 3" },
+    Multi = false,
+    Default = "Opção 1",
+    Callback = function(value)
+        print("Selecionado:", value)
+    end
+})
+
+-- Colorpicker
+Tabs.Main:AddColorpicker("ColorPick", {
+    Title = "Escolha uma Cor",
+    Default = Color3.fromRGB(255, 0, 0),
+    Transparency = true,
+    Callback = function(color)
+        print("Cor escolhida:", color)
+    end
+})
+
+-- Keybind (atalho)
+Tabs.Main:AddKeybind("Atalho", {
+    Title = "Atalho de Teclado",
+    Mode = "Toggle", -- Pode ser "Always", "Hold", ou "Toggle"
+    Default = Enum.KeyCode.RightShift,
+    Callback = function()
+        print("Atalho ativado!")
+    end
+})
+
+-- Input de texto
+Tabs.Main:AddInput("Texto", {
+    Title = "Campo de Texto",
+    Default = "Digite aqui",
+    Placeholder = "Ex: João",
+    Numeric = false,
+    Finished = true,
+    Callback = function(value)
+        print("Texto inserido:", value)
+    end
+})
+
+-- Gerenciando configurações
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+
+-- Configurando opções
+SaveManager:BuildConfigSection(Tabs.Settings)
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+
+-- Nome do jogo salvo/config
+SaveManager:SetIgnoreIndexes({ "MyToggle" }) -- Ignora esse campo nas configs
+SaveManager:SetFolder("FluentUI")
+SaveManager:BuildConfigSection(Tabs.Settings)
+SaveManager:LoadAutoloadConfig()
